@@ -1,87 +1,100 @@
 import React, { useState } from "react";
-import { Alert } from "bootstrap";
+import Alert from "react-bootstrap/Alert";
 
 const Formulario = ({ setResult }) => {
-  const [email, setEmail] = React.useState("");
-  const [contraseña, setContraseña] = React.useState("");
-
-  const [result, setResult] = useState({isShown : false, msg: 'asd', variant: 'warning'});
+  const [email, setEmail] = useState("");
+  const [contraseña, setContraseña] = useState("");
+  const [alert, setAlert] = useState({ isShown: false, msg: "", variant: "" });
 
   const validarForm = (e) => {
     e.preventDefault();
 
     if (!email.trim()) {
-      alert("esta vacio el campo e-mail");
+      setAlert({
+        isShown: true,
+        msg: "El campo email no puede estar vacío",
+        variant: "warning",
+      });
       return;
     }
 
     if (!contraseña.trim()) {
-      alert("esta vacio el campo contraseña");
+      setAlert({
+        isShown: true,
+        msg: "El campo contraseña no puede estar vacío",
+        variant: "warning",
+      });
       return;
     }
 
     if (email === "aaa@aaa.aa" && contraseña === "aaa@aaa.aa") {
-      setResult({
+      setAlert({
         isShown: true,
-        msg: "Tu e-mail y Password son las correctas",
+        msg: "Tu e-mail y Password son los correctos",
         variant: "success",
       });
       return;
     }
 
-    alert(
-      "procesando datos..." +
-        "Su email es:" +
-        email +
-        "Su contraseña es:" +
-        contraseña
-    );
-    return;
+    setAlert({
+      isShown: true,
+      msg: "Datos erronéos vuelve a intentarlo",
+      variant: "danger",
+    });
   };
 
   const handleOnChange = (e) => {
-    switch (e.target.name) {
-      case "email":
-        setEmail(e.target.value);
-        break;
-      case "contraseña":
-        setContraseña(e.target.value);
-        break;
-      default:
-    }
+    const { name, value } = e.target;
+    name === "email" ? setEmail(value) : setContraseña(value);
   };
 
   return (
-    <div>
+    <div className="container mt-5">
       <h2>Formulario</h2>
-      <form onSubmit={validarForm} >
-
-      <Alert key={result.variant} variant={result.variant} >
-        {result.msg}
-      </Alert>
-
-        <input
-          type="email"
-          placeholder="Ingrese su e-mail"
-          className="form-control mb-2"
-          onChange={(e) => handleOnChange(e)}
-        />
-        <input
-          type="password"
-          placeholder="Ingrese su Contraseña"
-          className="form-control mb-2"
-          onChange={(e) => handleOnChange(e)}
-        />
-        <div id="passwordHelpBlock" class="form-text">
-          Pista: el e-mail es aaa@aaa.aa y la pass es la misma
+      <form onSubmit={validarForm}>
+        <div className="row">
+          {alert.isShown && (
+            <Alert
+              variant={alert.variant}
+              onClose={() => setAlert({ isShown: false, msg: "", variant: "" })}
+              dismissible
+            >
+              {alert.msg}
+            </Alert>
+          )}
+          <div className="col-md-6 mt-5">
+            <input
+              type="email"
+              placeholder="Ingrese su e-mail"
+              className="form-control mb-2"
+              autoComplete="off"
+              name="email"
+              value={email}
+              onChange={handleOnChange}
+            />
+          </div>
+          <div className="col-md-6 mt-5">
+            <input
+              type="password"
+              placeholder="Ingrese su Contraseña"
+              className="form-control mb-2"
+              autoComplete="off"
+              name="contraseña"
+              value={contraseña}
+              onChange={handleOnChange}
+            />
+          </div>
+          <div className="form-text mb-3 align-center">
+            Pista: el e-mail es aaa@aaa.aa y la pass es la misma
+          </div>
+          <button
+            className="btn btn-primary btn-block"
+            type="submit"
+            disabled={!email || !contraseña}
+          >
+            Ingresar
+          </button>
         </div>
-        <button
-          className="btn btn-primary btn-block"
-          type="submit"
-          disabled={email === "" && contraseña === "" ? true : false}
-        >
-          Agregar
-        </button>
       </form>
     </div>
   );
